@@ -1,9 +1,11 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/continue_button.dart';
 
 class StressChallengesScreen extends StatefulWidget {
-  const StressChallengesScreen({super.key});
+  final int questionid_11;
+  const StressChallengesScreen({super.key,required this.questionid_11});
 
   @override
   State<StressChallengesScreen> createState() => _StressChallengesScreenState();
@@ -28,7 +30,41 @@ class _StressChallengesScreenState extends State<StressChallengesScreen> {
       }
     });
   }
+   List<int> _mapSelectedToIds() {
+    return selected.map((s) {
+      switch (s) {
+        case "Nothing, I’m ready":
+          return 1;
+        case "Not sure what to do":
+          return 2;
+        case "Forgetting to open it":
+          return 3;
+        case "Lack of time":
+          return 4;
+        default:
+          return 0;
+      }
+    }).toList();
+  }
+  void _handleContinue() async {
+    if (selected.length != 3) return; // safety check
 
+    final answerIds = _mapSelectedToIds();
+
+    final success = await sendresponse(
+     
+      questionIds: [widget.questionid_11],
+      answers: [answerIds],
+    );
+
+    if (success) {
+      Navigator.pushNamed(context,'/learningPreference'); // replace with your next route
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save response!')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     // Logic to match the design requirements
@@ -104,8 +140,10 @@ class _StressChallengesScreenState extends State<StressChallengesScreen> {
               const SizedBox(height: 16),
               ContinueButton(
                 onTap: canContinue
-                    ? () => Navigator.pushNamed(context, '/learningPreference')
-                    : () {}, // Button is "disabled" unless 3 are selected
+                ? () {
+                  _handleContinue();
+                }
+                : () {}
               ),
               const SizedBox(height: 40),
             ],

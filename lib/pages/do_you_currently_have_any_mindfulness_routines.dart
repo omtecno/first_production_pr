@@ -1,13 +1,21 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 
 class MindfulnessRoutineScreen extends StatefulWidget {
-  const MindfulnessRoutineScreen({Key? key}) : super(key: key);
+  final int questionid_8;
+  const MindfulnessRoutineScreen({Key? key,required this.questionid_8}) : super(key: key);
 
   @override
   State<MindfulnessRoutineScreen> createState() => _MindfulnessRoutineScreenState();
 }
 
 class _MindfulnessRoutineScreenState extends State<MindfulnessRoutineScreen> {
+  final Map<String, int> mindfulnessAnswerMap = {
+  'Yes, regularly': 1,
+  'Yes, sometimes': 1,
+  'No': 0,
+};
+
   String? selectedOption;
   final TextEditingController detailsController = TextEditingController();
 
@@ -22,16 +30,26 @@ class _MindfulnessRoutineScreenState extends State<MindfulnessRoutineScreen> {
   }
 
   // Refactored logic to handle the "Continue" action
-  void _handleNavigation() {
+  void _handleNavigation() async{
     // You can pass the selected data to the next screen or save to a state provider
-    final Map<String, dynamic> surveyData = {
-      'hasRoutine': selectedOption,
-      'routineDetails': showDetailsInput ? detailsController.text : null,
-    };
+      final int answerId = mindfulnessAnswerMap[selectedOption]!;
 
-    // Replace '/stressSource' with your actual route name defined in main.dart
-    Navigator.pushNamed(context, '/stress', arguments: surveyData);
+    final success = await sendresponse(
+    
+    questionIds: [widget.questionid_8], // replace 8 with your questionId variable if needed
+    answers: [[answerId]],
+  );
+
+
+  if(success){
+    Navigator.pushNamed(context, '/stress');
+
+  }else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to save response!')),
+    );
   }
+}
 
   Widget _optionTile(String text) {
     final bool isSelected = selectedOption == text;
@@ -163,7 +181,8 @@ class _MindfulnessRoutineScreenState extends State<MindfulnessRoutineScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: selectedOption == null ? null : _handleNavigation,
+                onPressed: selectedOption == null ? null :_handleNavigation,
+                
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   disabledBackgroundColor: Colors.grey.shade300,

@@ -1,7 +1,10 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
+import '../navigation/routes.dart';
 
 class M4OpenSharingScreen extends StatefulWidget {
-  const M4OpenSharingScreen({Key? key}) : super(key: key);
+  final int questionid_14;
+  const M4OpenSharingScreen({Key? key, required this.questionid_14}) : super(key: key);
 
   @override
   State<M4OpenSharingScreen> createState() => _M4OpenSharingScreenState();
@@ -27,6 +30,31 @@ class _M4OpenSharingScreenState extends State<M4OpenSharingScreen> {
     super.dispose();
   }
 
+  Future<void> _handleNext() async {
+    if (!_isHasText) {
+      // Optional: just navigate if no text
+      Navigator.pushNamed(context, Routes.insights);
+      return;
+    }
+
+    final success = await sendresponse(
+
+      questionIds: [widget.questionid_14],
+      answers: [
+        [0]
+      ],
+      freeTextAnswers: [_textController.text], // assuming backend supports this
+    );
+
+    if (success) {
+      Navigator.pushNamed(context, Routes.insights);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save response!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +68,7 @@ class _M4OpenSharingScreenState extends State<M4OpenSharingScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/insights'),
+            onPressed: () => Navigator.pushNamed(context, Routes.insights),
             child: const Text(
               'Skip',
               style: TextStyle(
@@ -81,12 +109,11 @@ class _M4OpenSharingScreenState extends State<M4OpenSharingScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
-                    color: Colors.white, // Switched to white for better contrast
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -118,9 +145,7 @@ class _M4OpenSharingScreenState extends State<M4OpenSharingScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-              
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -142,14 +167,12 @@ class _M4OpenSharingScreenState extends State<M4OpenSharingScreen> {
                   ),
                 ],
               ),
-              
               const SizedBox(height: 32),
-            
               SizedBox(
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/insights'),
+                  onPressed: _isHasText ? _handleNext : () => Navigator.pushNamed(context, Routes.insights),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _isHasText ? Colors.black : const Color(0xFFD1D1D1),
                     foregroundColor: Colors.white,

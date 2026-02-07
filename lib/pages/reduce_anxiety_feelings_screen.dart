@@ -1,8 +1,10 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../navigation/routes.dart';
 
 class ReduceAnxietyFeelingsScreen extends StatefulWidget {
-  const ReduceAnxietyFeelingsScreen({super.key});
+  final int questionid_3;
+  const ReduceAnxietyFeelingsScreen({super.key,required this.questionid_3});
 
   @override
   State<ReduceAnxietyFeelingsScreen> createState() =>
@@ -10,6 +12,22 @@ class ReduceAnxietyFeelingsScreen extends StatefulWidget {
 }
 
 class _ReduceAnxietyFeelingsScreenState extends State<ReduceAnxietyFeelingsScreen> {
+    final Map<String, int> anxietyoptionids = {
+    "Racing thoughts": 1,
+    "Muscle tension": 2,
+    "Negative self-talk": 3,
+    "Fatigue": 4,
+    "Restlessness": 5,
+    "Irritability": 6,
+    "Comparing to others": 7,
+    "Fear of failure": 8,
+    "Forgetfulness": 9,
+    "Easily distracted": 10,
+    "Mental fog": 11,
+    "Procrastination": 12,
+    "Self-doubt": 13,
+    "Feeling overwhelmed": 14,
+  };
   final List<String> options = [
     "Racing thoughts", "Muscle tension", "Negative self-talk",
     "Fatigue", "Restlessness", "Irritability",
@@ -106,7 +124,23 @@ class _ReduceAnxietyFeelingsScreenState extends State<ReduceAnxietyFeelingsScree
               child: ElevatedButton(
                 onPressed: selectedOptions.isEmpty
                     ? null
-                    : () => Navigator.pushNamed(context, Routes.m4copping), // Adjust route as needed
+                    : () async{
+                      final userId = 'b8a13133-8b32-4b37-a9cb-74ad18992b85';
+                        final questionId = widget.questionid_3;
+                        final List<int> answerids = selectedOptions.map((opt) => anxietyoptionids[opt]!).toList();
+                          final success = await sendresponse(
+                            
+                            answers: [answerids],
+                          questionIds: [questionId],
+                          );
+                          if (success){
+                            Navigator.pushNamed(context, Routes.m4copping);
+                          }else{
+                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                          }
+                    }
+                    //  Navigator.pushNamed(context, Routes.m4copping)
+                    , // Adjust route as needed
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   disabledBackgroundColor: Colors.grey.shade200,

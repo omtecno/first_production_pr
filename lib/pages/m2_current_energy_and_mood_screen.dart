@@ -1,8 +1,10 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../navigation/routes.dart';
 
 class MoodSelectionScreen extends StatefulWidget {
-  const MoodSelectionScreen({super.key});
+  final int questionid_2;
+  const MoodSelectionScreen({super.key,required this.questionid_2});
 
   @override
   State<MoodSelectionScreen> createState() => _MoodSelectionScreenState();
@@ -10,7 +12,13 @@ class MoodSelectionScreen extends StatefulWidget {
 
 class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
   String? selectedMood;
-
+    final Map<String, int> moodanswerids = {
+    'Drained': 1,
+    'Low': 2,
+    'Neutral': 3,
+    'Good':4,
+    'Energetic':5
+  };
   final List<Map<String, String>> moods = [
     {'label': 'Drained', 'emoji': '😫'},
     {'label': 'Low', 'emoji': '😔'},
@@ -109,7 +117,20 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen> {
               height: 60,
               child: ElevatedButton(
                 onPressed: selectedMood != null 
-                  ? () => Navigator.pushNamed(context, Routes.m3primary) 
+                  ? () async{
+                    int answer_id=moodanswerids[selectedMood]!;
+                    final success=await sendresponse(
+                   
+                      questionIds:[widget.questionid_2], 
+                      answers: [[answer_id]]
+                      );
+                    if (success){
+                       Navigator.pushNamed(context, Routes.m3primary);
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                    }
+                  }
+                  // Navigator.pushNamed(context, Routes.m3primary) 
                   : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

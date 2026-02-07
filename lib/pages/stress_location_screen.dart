@@ -1,9 +1,11 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../widgets/option_tile.dart';
 import '../widgets/continue_button.dart';
 
 class StressLocationScreen extends StatefulWidget {
-  const StressLocationScreen({super.key});
+  final int questionid_10;
+  const StressLocationScreen({super.key, required this.questionid_10});
 
   @override
   State<StressLocationScreen> createState() => _StressLocationScreenState();
@@ -29,6 +31,49 @@ class _StressLocationScreenState extends State<StressLocationScreen> {
         selected.add(value);
       }
     });
+  }
+
+  // Map selected locations to backend IDs
+  List<int> _mapSelectedToIds() {
+    return selected.map((s) {
+      switch (s) {
+        case "At my work / school":
+          return 1;
+        case "In meetings or class":
+          return 2;
+        case "During commute":
+          return 3;
+        case "At home":
+          return 4;
+        case "In social situations":
+          return 5;
+        case "While trying to sleep":
+          return 6;
+        default:
+          return 0;
+      }
+    }).toList();
+  }
+
+  // Handle Continue button tap with DB call
+  void _handleContinue() async {
+    if (selected.length != 3) return; // safety check
+
+    final answerIds = _mapSelectedToIds();
+
+    final success = await sendresponse(
+    
+      questionIds: [widget.questionid_10],
+      answers: [answerIds],
+    );
+
+    if (success) {
+      Navigator.pushNamed(context, '/stresschallenge');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save response!')),
+      );
+    }
   }
 
   @override
@@ -68,8 +113,6 @@ class _StressLocationScreenState extends State<StressLocationScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              
-              // Helper text that updates based on selection count
               Text(
                 canContinue 
                   ? "Got it! Tap continue to proceed." 
@@ -81,12 +124,11 @@ class _StressLocationScreenState extends State<StressLocationScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-
               Expanded(
                 child: ListView.separated(
                   physics: const BouncingScrollPhysics(),
                   itemCount: options.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final item = options[index];
                     return OptionTile(
@@ -97,12 +139,14 @@ class _StressLocationScreenState extends State<StressLocationScreen> {
                   },
                 ),
               ),
-
               const SizedBox(height: 16),
+      
               ContinueButton(
                 onTap: canContinue
-                    ? () => Navigator.pushNamed(context, '/stresschallenge')
-                    : () {}, // Disabling the button if count != 3
+                ? () {
+                  _handleContinue();
+                }
+                : () {}
               ),
               const SizedBox(height: 40),
             ],

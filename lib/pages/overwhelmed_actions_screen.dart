@@ -1,14 +1,17 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../navigation/routes.dart';
 
 class OverwhelmedActionsScreen extends StatefulWidget {
-  const OverwhelmedActionsScreen({Key? key}) : super(key: key);
+  final int questionid_4;
+  const OverwhelmedActionsScreen({Key? key,required this.questionid_4}) : super(key: key);
 
   @override
   State<OverwhelmedActionsScreen> createState() => _OverwhelmedActionsScreenState();
 }
 
 class _OverwhelmedActionsScreenState extends State<OverwhelmedActionsScreen> {
+
   final List<_ActionItem> actions = [
     _ActionItem("Take a walk", Icons.directions_walk_rounded),
     _ActionItem("Talk to someone", Icons.chat_bubble_outline_rounded),
@@ -73,7 +76,23 @@ class _OverwhelmedActionsScreenState extends State<OverwhelmedActionsScreen> {
               height: 60,
               child: ElevatedButton(
                 onPressed: allAnswered
-                    ? () => Navigator.pushNamed(context, Routes.m5support) // Or your support level route
+                    ? () async{
+                      final List<int> answer=actions.map<int>((action){
+                      if (action.helpsMe == true) return 1;
+                      if (action.helpsMe == false) return 0;
+                      return 0;
+                      }).toList();
+                      final success=await sendresponse(
+                
+                        questionIds: [widget.questionid_4], 
+                        answers: [answer]);
+                     if (success){
+                      Navigator.pushNamed(context, Routes.m5support);
+                     }else{
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                     }
+                    }
+                    //  Navigator.pushNamed(context, Routes.m5support) // Or your support level route
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

@@ -1,9 +1,11 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../widgets/continue_button.dart';
 import '../navigation/routes.dart';
 
 class LearningPreferenceScreen extends StatefulWidget {
-  const LearningPreferenceScreen({super.key});
+  final int questionid_12;
+  const LearningPreferenceScreen({super.key,required this.questionid_12});
 
   @override
   State<LearningPreferenceScreen> createState() => _LearningPreferenceScreenState();
@@ -11,6 +13,11 @@ class LearningPreferenceScreen extends StatefulWidget {
 
 class _LearningPreferenceScreenState extends State<LearningPreferenceScreen> {
   double sliderValue = 0.5;
+  int _mapSliderToId() {
+  if (sliderValue < 0.3) return 1; // Guided step-by-step
+  if (sliderValue > 0.7) return 3; // Exploratory
+  return 2; // Mixed
+}
 
   // Dynamic feedback based on slider position
   String getPreferenceText() {
@@ -18,6 +25,25 @@ class _LearningPreferenceScreenState extends State<LearningPreferenceScreen> {
     if (sliderValue > 0.7) return "I prefer to browse and choose tools at my own pace.";
     return "I like a mix of guidance and personal freedom.";
   }
+  void _handleContinue() async {
+  final answerId = _mapSliderToId();
+
+  final success = await sendresponse(
+   
+    questionIds: [widget.questionid_12],
+    answers: [
+      [answerId] // wrapped in list because `sendresponse` expects List<List<int>>
+    ],
+  );
+
+  if (success) {
+    Navigator.pushNamed(context, Routes.m4weekly);
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to save response!')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +126,9 @@ class _LearningPreferenceScreenState extends State<LearningPreferenceScreen> {
 
             const Spacer(),
             ContinueButton(
-              onTap: () {
-               Navigator.pushNamed(context, Routes.m4weekly);
-              },
+              onTap:_handleContinue,
+               
+              
             ),
             const SizedBox(height: 40),
           ],

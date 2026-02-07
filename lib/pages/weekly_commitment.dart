@@ -1,7 +1,10 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
+import '../navigation/routes.dart';
 
 class WeeklyCommitment extends StatefulWidget {
-  const WeeklyCommitment({Key? key}) : super(key: key);
+  final int questionid_13;
+  const WeeklyCommitment({Key? key, required this.questionid_13}) : super(key: key);
 
   @override
   State<WeeklyCommitment> createState() => _WeeklyCommitmentState();
@@ -15,6 +18,42 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
     '15-20 minutes, 2-3 times',
     "I'll play it by ear",
   ];
+
+  // Map option text to backend IDs
+  int _mapOptionToId(String option) {
+    switch (option) {
+      case 'Just 5-10 minutes, a few times':
+        return 1;
+      case '15-20 minutes, 2-3 times':
+        return 2;
+      case "I'll play it by ear":
+        return 3;
+      default:
+        return 0;
+    }
+  }
+
+  void _handleContinue() async {
+    if (selectedOption == null) return;
+
+    final answerId = _mapOptionToId(selectedOption!);
+
+    final success = await sendresponse(
+
+      questionIds: [widget.questionid_13],
+      answers: [
+        [answerId] // wrapped in list because sendresponse expects List<List<int>>
+      ],
+    );
+
+    if (success) {
+      Navigator.pushNamed(context, Routes.m4opensharing); // next screen
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save response!')),
+      );
+    }
+  }
 
   Widget _optionTile(String text) {
     final bool isSelected = selectedOption == text;
@@ -34,9 +73,9 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
             color: isSelected ? Colors.black : Colors.grey.shade300,
             width: 1.5,
           ),
-          boxShadow: isSelected 
-            ? [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))] 
-            : [],
+          boxShadow: isSelected
+              ? [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))]
+              : [],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,7 +90,6 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
                 ),
               ),
             ),
-            // Checkmark feedback
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               child: Icon(
@@ -81,12 +119,11 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
               style: TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 4),
-            // Progress indicator (assuming this is near the end, e.g., 14 of 16)
             SizedBox(
               width: 80,
               height: 3,
               child: LinearProgressIndicator(
-                value: 0.9, 
+                value: 0.9,
                 backgroundColor: Colors.grey.shade200,
                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.black),
               ),
@@ -104,7 +141,7 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
             const Text(
               "Set your pace",
               style: TextStyle(
-                fontSize: 28, 
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 letterSpacing: -0.5,
               ),
@@ -124,12 +161,7 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
               width: double.infinity,
               height: 58,
               child: ElevatedButton(
-                onPressed: selectedOption == null
-                    ? null
-                    : () {
-                        // Navigate to Open Sharing screen
-                        Navigator.pushNamed(context, '/m4opensharing');
-                      },
+                onPressed: selectedOption == null ? null : _handleContinue,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   disabledBackgroundColor: Colors.grey.shade300,
@@ -139,8 +171,8 @@ class _WeeklyCommitmentState extends State<WeeklyCommitment> {
                 child: const Text(
                   'CONTINUE',
                   style: TextStyle(
-                    fontSize: 16, 
-                    fontWeight: FontWeight.bold, 
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
                     letterSpacing: 1.1,
                   ),

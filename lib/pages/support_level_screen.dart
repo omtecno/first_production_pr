@@ -1,8 +1,10 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../navigation/routes.dart';
 
 class SupportLevelScreen extends StatefulWidget {
-  const SupportLevelScreen({Key? key}) : super(key: key);
+  final int questionid_5;
+  const SupportLevelScreen({Key? key,required this.questionid_5}) : super(key: key);
 
   @override
   State<SupportLevelScreen> createState() => _SupportLevelScreenState();
@@ -10,7 +12,14 @@ class SupportLevelScreen extends StatefulWidget {
 
 class _SupportLevelScreenState extends State<SupportLevelScreen> {
   double _value = 3;
+  final Map<String,int> levelnumber={
+    "😟":1,
+    "😔":2,
+    "😄":3,
+    "🙂":4,
+    "🥰":5,
 
+};
   final List<String> emojis = ["😟", "😔", "😐", "🙂", "🥰"];
 
   @override
@@ -102,8 +111,20 @@ class _SupportLevelScreenState extends State<SupportLevelScreen> {
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, Routes.m2sleep);
+                onPressed: () async{
+                  final String userid='b8a13133-8b32-4b37-a9cb-74ad18992b85';
+                  final int questionid=widget.questionid_5;
+                  final int answer=levelnumber[emojis[_value.round()-1]]!;
+                  final success=await sendresponse(
+                
+                    questionIds: [questionid], 
+                    answers: [[answer]]);
+                    if(success){
+                       Navigator.pushNamed(context, Routes.m2sleep);
+                    }else{
+                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                    }
+                  // Navigator.pushNamed(context, Routes.m2sleep);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

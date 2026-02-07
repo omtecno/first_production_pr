@@ -81,54 +81,54 @@ class RouteGenerator {
           pageBuilder: (_, __, ___) => const HomeScreen(),
           transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 500),
+          transitionDuration: Duration(milliseconds: 500),
         );
 
       case Routes.assessment:
         return MaterialPageRoute(
-          builder: (_) => const WellbeingAssessmentScreen(),
+          builder: (_) => WellbeingAssessmentScreen(),
         );
 
       case Routes.m2mood:
-        return MaterialPageRoute(builder: (_) => const MoodSelectionScreen());
+        return MaterialPageRoute(builder: (_) =>  MoodSelectionScreen(questionid_2: 2,));
       case Routes.m3primary:
         return MaterialPageRoute(
-          builder: (_) => const ReduceAnxietyFeelingsScreen(),
+          builder: (_) => ReduceAnxietyFeelingsScreen(questionid_3: 3,),
         );
       case Routes.m4copping:
         return MaterialPageRoute(
-          builder: (_) => const OverwhelmedActionsScreen(),
+          builder: (_) => OverwhelmedActionsScreen(questionid_4: 4,),
         );
       case Routes.m5support:
-        return MaterialPageRoute(builder: (_) => const SupportLevelScreen());
+        return MaterialPageRoute(builder: (_) =>  SupportLevelScreen(questionid_5: 5,));
 
       case Routes.m2sleep:
-        return MaterialPageRoute(builder: (_) => const SleepQualityScreen());
+        return MaterialPageRoute(builder: (_) =>SleepQualityScreen(questionid_6_1: 60,questionid_6_2:61,));
 
       case Routes.physicalActivity:
         return MaterialPageRoute(
-          builder: (_) => const PhysicalActivityScreen(),
+          builder: (_) => const PhysicalActivityScreen(questionid_7: 7,),
         );
 
       case Routes.stress:
-        return MaterialPageRoute(builder: (_) => const StressSourcesScreen());
+        return MaterialPageRoute(builder: (_) => StressSourcesScreen(questionid_9: 9,));
 
       case Routes.stresslocation:
-        return MaterialPageRoute(builder: (_) => const StressLocationScreen());
+        return MaterialPageRoute(builder: (_) => StressLocationScreen(questionid_10: 10,));
 
       // Ensure this matches the Step 12 Focus Area we built
       case Routes.stresschallenge:
         return MaterialPageRoute(
-          builder: (_) => const StressChallengesScreen(),
+          builder: (_) => StressChallengesScreen(questionid_11: 11,),
         );
 
       case Routes.learningPreference:
         return MaterialPageRoute(
-          builder: (_) => const LearningPreferenceScreen(),
+          builder: (_) =>  LearningPreferenceScreen(questionid_12: 12,),
         );
 
       case Routes.m4opensharing:
-        return MaterialPageRoute(builder: (_) => const M4OpenSharingScreen());
+        return MaterialPageRoute(builder: (_) =>M4OpenSharingScreen(questionid_14:14));
 
       // THE FINAL SEQUENCE - Using a FadeTransition for a smoother "Processing" feel
       case Routes.m4processing:
@@ -140,15 +140,15 @@ class RouteGenerator {
         );
 
       case Routes.insights:
-        return MaterialPageRoute(builder: (_) => const M4InsightsScreen());
+        return MaterialPageRoute(builder: (_) => const M4InsightsScreen(questionid_15: 15,));
 
       case Routes.m2mindfulness:
         return MaterialPageRoute(
-          builder: (_) => const MindfulnessRoutineScreen(),
+          builder: (_) => const MindfulnessRoutineScreen(questionid_8: 8,),
         );
 
       case Routes.m4weekly:
-        return MaterialPageRoute(builder: (_) => const WeeklyCommitment());
+        return MaterialPageRoute(builder: (_) => const WeeklyCommitment(questionid_13: 13,));
 
       case Routes.home:
         return PageRouteBuilder(

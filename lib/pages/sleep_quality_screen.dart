@@ -1,8 +1,11 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../navigation/routes.dart';
 
 class SleepQualityScreen extends StatefulWidget {
-  const SleepQualityScreen({super.key});
+  final int questionid_6_1;
+  final int questionid_6_2;
+  const SleepQualityScreen({super.key,required this.questionid_6_1,required this.questionid_6_2});
 
   @override
   State<SleepQualityScreen> createState() => _SleepQualityScreenState();
@@ -11,7 +14,18 @@ class SleepQualityScreen extends StatefulWidget {
 class _SleepQualityScreenState extends State<SleepQualityScreen> {
   String? selectedHours;
   String? selectedQuality;
-
+  final Map<String,int> hoursofsleep={
+    "5":1,
+    "6":2,
+    "7":3,
+    "8":4,
+    "9+":5
+  };
+  final Map<String,int> qualityMap = {
+    "Sound": 2,
+    "Fair": 1, 
+    "Restless": 0
+    };
   bool get isContinueEnabled =>
       selectedHours != null && selectedQuality != null;
 
@@ -96,7 +110,21 @@ class _SleepQualityScreenState extends State<SleepQualityScreen> {
       height: 60,
       child: ElevatedButton(
         onPressed: isContinueEnabled 
-            ? () => Navigator.pushNamed(context, Routes.physicalActivity) 
+            ? () async{
+              final selectedhoursvalue=hoursofsleep[selectedHours!]!;
+              final selectedqualityvalue=qualityMap[selectedQuality!]!;
+              final success=await sendresponse(
+            
+                questionIds:[widget.questionid_6_1,widget.questionid_6_2], 
+                answers:[[selectedhoursvalue],[selectedqualityvalue]]);
+                if(success){
+                  Navigator.pushNamed(context, Routes.physicalActivity);
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                }
+            }
+
+            //  Navigator.pushNamed(context, Routes.physicalActivity) 
             : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black,

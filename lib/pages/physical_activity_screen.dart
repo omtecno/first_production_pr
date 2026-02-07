@@ -1,8 +1,10 @@
+import 'package:firstproduction_pro/backend/backend.dart';
 import 'package:flutter/material.dart';
 import '../navigation/routes.dart';
 
 class PhysicalActivityScreen extends StatefulWidget {
-  const PhysicalActivityScreen({super.key});
+  final int questionid_7;
+  const PhysicalActivityScreen({super.key,required this.questionid_7});
 
   @override
   State<PhysicalActivityScreen> createState() => _PhysicalActivityScreenState();
@@ -12,7 +14,13 @@ class _PhysicalActivityScreenState extends State<PhysicalActivityScreen> {
   String? selectedOption;
 
   bool get isContinueEnabled => selectedOption != null;
-
+  
+  final Map<String,int> activityOptionsselectedlist = {
+    "Rarely":1,
+    "1-2 days a week":2,
+    "3-4 days a week":3,
+    "5+ days a week":4
+};
   final List<String> activityOptions = [
     "Rarely",
     "1-2 days a week",
@@ -117,7 +125,20 @@ class _PhysicalActivityScreenState extends State<PhysicalActivityScreen> {
       height: 60,
       child: ElevatedButton(
         onPressed: isContinueEnabled 
-            ? () => Navigator.pushNamed(context, Routes.m2mindfulness) 
+            ? () async{
+                    int answer_id=activityOptionsselectedlist[selectedOption]!;
+                    final success=await sendresponse(
+                    
+                      questionIds:[widget.questionid_7], 
+                      answers: [[answer_id]]
+                      );
+                    if (success){
+                       Navigator.pushNamed(context, Routes.m2mindfulness);
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save response!')));
+                    }
+                  }
+            //  Navigator.pushNamed(context, Routes.m2mindfulness) 
             : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black,
